@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // --- アプリケーションのエントリーポイント ---
 void main() {
@@ -14,16 +15,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Simple Pedometer',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        useMaterial3: true,
-      ),
+      title: 'Pedometer',
+      theme: ThemeData(primarySwatch: Colors.teal, useMaterial3: true),
       home: const PedometerScreen(),
     );
   }
 }
-
+//歩行速度を1.33 m/s
 // --- 歩数計のメイン画面 ---
 class PedometerScreen extends StatefulWidget {
   const PedometerScreen({super.key});
@@ -35,43 +33,61 @@ class PedometerScreen extends StatefulWidget {
 class _PedometerScreenState extends State<PedometerScreen> {
   int _stepCount = 0;
   StreamSubscription? _accelerometerSubscription;
-  
+  //ローカルストレージ
+  void _loadCounter() async {
+    final prefs = await SharedPreferences.getInstance();
+    //UIを更新
+    setState((){
+      _stepCount = prefs.getInt('counter') ?? 0; // キーから値を取得、なければ0
+    });
+  }
+
+    void _saveCounter() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('counter', _stepCount); // キーに値を保存
+  }
   // 歩数としてカウントするための揺れの大きさのしきい値
   // この値はデバイスや歩き方によって調整が必要です
-  final double _stepThreshold = 11.5; 
+  final double _stepThreshold = 11.5;
 
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
+
+  double walk_speed= 1.33;//平均の歩行の速さ　[m/s]
+  double walk_distance= 0.0;//歩行距離のへんすう[km]
 
   @override
   void initState() {
     super.initState();
     _startListening();
+    _loadCounter();
   }
 
   void _startListening() {
     // 加速度センサーからのデータストリームを購読
-    _accelerometerSubscription = accelerometerEventStream().listen(
-      (AccelerometerEvent event) {
-        // 3軸の加速度からベクトル（揺れの大きさ）を計算
-        double magnitude = sqrt(pow(event.x, 2) + pow(event.y, 2) + pow(event.z, 2));
+    _accelerometerSubscription = accelerometerEventStream().listen((
+      AccelerometerEvent event,
+    ) {
+      // 3軸の加速度からベクトル（揺れの大きさ）を計算
+      double magnitude = sqrt(
+        pow(event.x, 2) + pow(event.y, 2) + pow(event.z, 2),
+      );
 
-        // 揺れの大きさがしきい値を超え、かつまだピーク状態でない場合
-        if (magnitude > _stepThreshold && !_isPeak) {
-          setState(() {
-            _stepCount++;
-          });
-          _isPeak = true; // ピーク状態にする
-        } 
-        // 揺れの大きさがしきい値を下回り、かつピーク状態だった場合
-        else if (magnitude < _stepThreshold && _isPeak) {
-          _isPeak = false; // 次のステップを検出できるようにリセット
-        }
-      },
-    );
+      // 揺れの大きさがしきい値を超え、かつまだピーク状態でない場合
+      if (magnitude > _stepThreshold && !_isPeak) {
+        setState(() {
+          _stepCount++;
+        });
+        _isPeak = true; // ピーク状態にする
+      }
+      // 揺れの大きさがしきい値を下回り、かつピーク状態だった場合
+      else if (magnitude < _stepThreshold && _isPeak) {
+        _isPeak = false; // 次のステップを検出できるようにリセット
+      }
+    });
   }
 
-  // カウントをリセットする関数
+  // カウントをリセットする関数（日付変わった時に使う）
   void _resetCount() {
     setState(() {
       _stepCount = 0;
@@ -89,8 +105,19 @@ class _PedometerScreenState extends State<PedometerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('シンプルな歩数計'),
+        title: const Text('万数計'),
         backgroundColor: Colors.teal.shade100,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_forward),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NextPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(
@@ -112,11 +139,20 @@ class _PedometerScreenState extends State<PedometerScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _resetCount,
-        tooltip: 'Reset',
+        onPressed: _saveCounter,
+        tooltip: 'Save',
         backgroundColor: Colors.teal,
-        child: const Icon(Icons.refresh, color: Colors.white),
+        child: const Icon(Icons.save, color: Colors.white),
       ),
     );
+  }
+}
+
+class NextPage extends StatelessWidget {
+  final TextEditingController textController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(appBar: AppBar(title: const Text('次のページ')));
   }
 }
