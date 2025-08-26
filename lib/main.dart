@@ -33,6 +33,7 @@ class PedometerScreen extends StatefulWidget {
 class _PedometerScreenState extends State<PedometerScreen> {
   int _stepCount = 0;
   StreamSubscription? _accelerometerSubscription;
+
   //ローカルストレージ
   void _loadCounter() async {
     final prefs = await SharedPreferences.getInstance();
