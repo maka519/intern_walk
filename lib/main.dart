@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Pedometer',
+      title: 'Simple Pedometer',
       theme: ThemeData(primarySwatch: Colors.teal, useMaterial3: true),
       home: const PedometerScreen(),
     );
@@ -46,6 +46,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('counter', _stepCount); // キーに値を保存
   }
+
   // 歩数としてカウントするための揺れの大きさのしきい値
   // この値はデバイスや歩き方によって調整が必要です
   final double _stepThreshold = 11.5;
