@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
+//歩行速度を1.33 m/s
 // --- 歩数計のメイン画面 ---
 class PedometerScreen extends StatefulWidget {
   const PedometerScreen({super.key});
@@ -42,6 +42,9 @@ class _PedometerScreenState extends State<PedometerScreen> {
 
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
+
+  double walk_speed= 1.33;//平均の歩行の速さ　[m/s]
+  double walk_distance= 0.0;//歩行距離のへんすう[km]
 
   @override
   void initState() {
