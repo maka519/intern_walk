@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 //歩行速度を1.33 m/s
 // --- 歩数計のメイン画面 ---
 class PedometerScreen extends StatefulWidget {
@@ -38,15 +39,16 @@ class _PedometerScreenState extends State<PedometerScreen> {
   void _loadCounter() async {
     final prefs = await SharedPreferences.getInstance();
     //UIを更新
-    setState((){
+    setState(() {
       _stepCount = prefs.getInt('counter') ?? 0; // キーから値を取得、なければ0
     });
   }
 
-    void _saveCounter() async {
+  void _saveCounter() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('counter', _stepCount); // キーに値を保存
   }
+
   // 歩数としてカウントするための揺れの大きさのしきい値
   // この値はデバイスや歩き方によって調整が必要です
   final double _stepThreshold = 11.5;
@@ -54,8 +56,8 @@ class _PedometerScreenState extends State<PedometerScreen> {
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
 
-  double walk_speed= 1.33;//平均の歩行の速さ　[m/s]
-  double walk_distance= 0.0;//歩行距離のへんすう[km]
+  double walk_speed = 1.33; //平均の歩行の速さ　[m/s]
+  double walk_distance = 0.0; //歩行距離のへんすう[km]
 
   @override
   void initState() {
@@ -120,24 +122,47 @@ class _PedometerScreenState extends State<PedometerScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              '歩数:',
-              style: TextStyle(fontSize: 32, color: Colors.grey),
-            ),
-            Text(
-              '$_stepCount',
-              style: const TextStyle(
-                fontSize: 100,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('images/bg_dote.jpg'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.blue, width: 5.0),
+                borderRadius: BorderRadius.circular(10.0),
+                color: Colors.white.withOpacity(0.9),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    '歩数:',
+                    style: TextStyle(fontSize: 32, color: Colors.grey),
+                  ),
+                  Text(
+                    '$_stepCount',
+                    style: const TextStyle(
+                      fontSize: 100,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _saveCounter,

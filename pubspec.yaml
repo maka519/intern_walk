@@ -53,15 +53,15 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
-flutter:
 
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
+flutter:
   uses-material-design: true
 
+  # 以下の行を追加してください。
+  assets:
+    - images/bg_dote.jpg
   # To add assets to your application, add an assets section, like this:
-  # assets:
+
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
