@@ -114,7 +114,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NextPage()),
+                MaterialPageRoute(builder: (context) => NextState()),
               );
             },
           ),
@@ -149,7 +149,13 @@ class _PedometerScreenState extends State<PedometerScreen> {
   }
 }
 
-class NextPage extends StatelessWidget {
+class NextState extends StatefulWidget {
+  const NextState({super.key});
+
+  @override
+  State<NextState> createState() => NextPage();
+}
+class NextPage extends State<NextState> {
   final TextEditingController textController = TextEditingController();
 
   @override
