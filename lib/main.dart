@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // --- アプリケーションのエントリーポイント ---
 void main() {
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Simple Pedometer',
+      title: 'Pedometer',
       theme: ThemeData(primarySwatch: Colors.teal, useMaterial3: true),
       home: const PedometerScreen(),
     );
@@ -33,6 +34,19 @@ class _PedometerScreenState extends State<PedometerScreen> {
   int _stepCount = 0;
   StreamSubscription? _accelerometerSubscription;
 
+  //ローカルストレージ
+  void _loadCounter() async {
+    final prefs = await SharedPreferences.getInstance();
+    //UIを更新
+    setState((){
+      _stepCount = prefs.getInt('counter') ?? 0; // キーから値を取得、なければ0
+    });
+  }
+
+    void _saveCounter() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('counter', _stepCount); // キーに値を保存
+  }
   // 歩数としてカウントするための揺れの大きさのしきい値
   // この値はデバイスや歩き方によって調整が必要です
   final double _stepThreshold = 11.5;
@@ -47,6 +61,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
   void initState() {
     super.initState();
     _startListening();
+    _loadCounter();
   }
 
   void _startListening() {
@@ -73,7 +88,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
     });
   }
 
-  // カウントをリセットする関数
+  // カウントをリセットする関数（日付変わった時に使う）
   void _resetCount() {
     setState(() {
       _stepCount = 0;
@@ -91,7 +106,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('シンプルな歩数計'),
+        title: const Text('万数計'),
         backgroundColor: Colors.teal.shade100,
         actions: [
           IconButton(
@@ -125,10 +140,10 @@ class _PedometerScreenState extends State<PedometerScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _resetCount,
-        tooltip: 'Reset',
+        onPressed: _saveCounter,
+        tooltip: 'Save',
         backgroundColor: Colors.teal,
-        child: const Icon(Icons.refresh, color: Colors.white),
+        child: const Icon(Icons.save, color: Colors.white),
       ),
     );
   }
