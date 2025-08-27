@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Simple Pedometer',
+      title: 'Pedometer',
       theme: ThemeData(primarySwatch: Colors.teal, useMaterial3: true),
       home: const PedometerScreen(),
     );
@@ -37,6 +37,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
 
   final DateManager _dateManager = DateManager(); // DateManagerのインスタンスを作成
   String _currentDate = ''; // 現在カウントしている日付を保持
+
 
   // 歩数としてカウントするための揺れの大きさのしきい値
   final double _stepThreshold = 11.5;
@@ -124,7 +125,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NextPage()),
+                MaterialPageRoute(builder: (context) => NextState()),
               );
             },
           ),
@@ -157,7 +158,13 @@ class _PedometerScreenState extends State<PedometerScreen> {
   }
 }
 
-class NextPage extends StatelessWidget {
+class NextState extends StatefulWidget {
+  const NextState({super.key});
+
+  @override
+  State<NextState> createState() => NextPage();
+}
+class NextPage extends State<NextState> {
   final TextEditingController textController = TextEditingController();
 
   @override
