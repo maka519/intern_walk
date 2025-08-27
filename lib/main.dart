@@ -34,7 +34,7 @@ class PedometerScreen extends StatefulWidget {
 }
 
 class _PedometerScreenState extends State<PedometerScreen> {
-  int _stepCount = 0;
+  int _stepCount = 10000;
   StreamSubscription? _accelerometerSubscription;
 
   final DateManager _dateManager = DateManager(); // DateManagerのインスタンスを作成
@@ -81,7 +81,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
         // 新しい日のためにリセット
         if (mounted) {
           setState(() {
-            _stepCount = 0; // 歩数カウントを0に
+            _stepCount = 10000; // 歩数カウントを0に
             _currentDate = todaydate; // 現在の日付を更新
           });
         }
@@ -169,8 +169,8 @@ class _PedometerScreenState extends State<PedometerScreen> {
                   ),
                   Text(
                     '$_stepCount',
-                    style: const TextStyle(
-                      fontSize: 100,
+                    style: TextStyle(
+                      fontSize: _stepCount > 1000000 ? 100 : 60,
                       fontWeight: FontWeight.bold,
                       color: Colors.teal,
                     ),
