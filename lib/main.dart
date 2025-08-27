@@ -5,7 +5,7 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'calo.dart';
 import 'date.dart';
-
+import 'package:fl_chart/fl_chart.dart';
 // --- アプリケーションのエントリーポイント ---
 void main() {
   runApp(const MyApp());
@@ -46,8 +46,8 @@ class _PedometerScreenState extends State<PedometerScreen> {
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
 
-  double walk_speed= 1.33;//平均の歩行の速さ　[m/s]
-  double walk_distance= 0.0;//歩行距離のへんすう[km]
+  //double walk_speed= 1.33;//平均の歩行の速さ　[m/s]
+  //double walk_distance= 0.0;//歩行距離のへんすう[km]
 
   @override
   void initState() {
@@ -118,6 +118,13 @@ class _PedometerScreenState extends State<PedometerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+         flexibleSpace: Container(
+              decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: NetworkImage("https://gingerweb.jp/wp-content/uploads/2020/12/rectangle_large_type_2_7398bd1f4810549fd5a48efceb3067f5.jpg",),
+                  fit: BoxFit.cover),
+            )
+        ),
         title: const Text('万数計'),
         backgroundColor: Colors.teal.shade100,
         actions: [
@@ -157,6 +164,14 @@ class _PedometerScreenState extends State<PedometerScreen> {
           ],
         ),
       ),
+    //  bottomNavigationBar: Container(
+    //    height: 100, // 画像の高さ
+    //    width: MediaQuery.of(context).size.width, // 画面幅に設定
+    //    child: Image.network(
+    //      "https://gingerweb.jp/wp-content/uploads/2020/12/rectangle_large_type_2_7398bd1f4810549fd5a48efceb3067f5.jpg",
+    //      fit: BoxFit.fill, // 指定されたサイズいっぱいに引き伸ばす
+    //    ),
+    //  ),引き伸ばして画像を表示する
     );
   }
 }
@@ -199,14 +214,53 @@ void calo(){
     
     return Scaffold(appBar: AppBar(title: const Text('次のページ')),
     body: Center(
-        child: Text(
+      child :Column(
+        children :[
+          Text(
           '消費カロリー${consume_cal.toStringAsFixed(2)}Kcal\n脂肪燃焼量${consumeFat.toStringAsFixed(2)}g',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
+        const SizedBox(height: 32), // スペーサー
+              SizedBox(
+                height: 250, // チャートに固定の高さを与える
+                width: 300, // チャートに固定の幅を与える
+                child: BarChart(
+                  BarChartData(
+                    borderData: FlBorderData(
+                      border: const Border(
+                        top: BorderSide.none,
+                        right: BorderSide.none,
+                        left: BorderSide(width: 1),
+                        bottom: BorderSide(width: 1),
+                      ),
+                    ),
+                    groupsSpace: 10,
+                    barGroups: [
+                      BarChartGroupData(x: 1, barRods: [
+                        BarChartRodData(fromY: 0, toY: 4, width: 15, color: Colors.amber),
+                      ]),
+                      BarChartGroupData(x: 2, barRods: [
+                        BarChartRodData(fromY: 0, toY: 7, width: 15, color: Colors.indigo),
+                      ]),
+                      BarChartGroupData(x: 3, barRods: [
+                        BarChartRodData(fromY: 0, toY: 10, width: 15, color: Colors.amber),
+                      ]),
+                      BarChartGroupData(x: 4, barRods: [
+                        BarChartRodData(fromY: 0, toY: 8, width: 15, color: Colors.indigo),
+                      ]),
+                      
+                    ],
+                  ),
+                ),
+              ),
+        ]
       ),
+        
+      ),
+      
     );
   }
-}
+} 
