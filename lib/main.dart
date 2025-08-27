@@ -122,19 +122,6 @@ class _PedometerScreenState extends State<PedometerScreen> {
       appBar: AppBar(
         title: const Text('万数計'),
         backgroundColor: Colors.blue.shade100,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_forward),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NextState(stepCount: _stepCount),
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: Stack(
         children: [
@@ -187,6 +174,28 @@ class _PedometerScreenState extends State<PedometerScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.blue.shade100,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+
+          children: [
+            IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.home), onPressed: () {}),
+            IconButton(
+              icon: const Icon(Icons.bar_chart),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NextState(stepCount: _stepCount),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -224,11 +233,31 @@ class NextPage extends State<NextState> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('次のページ')),
+      appBar: AppBar(
+        title: const Text('次のページ'),
+        automaticallyImplyLeading: false,
+      ),
       body: Center(
         child: Text(
           '消費カロリー${consume_cal.toStringAsFixed(2)}Kcal\n脂肪燃焼量${consumeFat.toStringAsFixed(2)}g',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.blue.shade100,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+
+          children: [
+            IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+            IconButton(
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            IconButton(icon: const Icon(Icons.bar_chart), onPressed: () {}),
+          ],
         ),
       ),
     );
