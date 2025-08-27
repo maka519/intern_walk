@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class DateManager{
   //今日の日付を取得
@@ -27,3 +28,21 @@ class DateManager{
     return lastSavedDate != getTodaydate();
   }
 }
+
+ Future<void> saveStepList(List<BarChartGroupData> barGroups) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<Map<String, dynamic>> dataToSave = barGroups.map((group) {
+      return {
+        'x': group.x,
+        'barRods': group.barRods.map((rod) {
+          return {
+            'toY': rod.toY,
+            'width': rod.width,
+            'color': rod.color.value,
+          };
+        }).toList(),
+      };
+    }).toList();
+    final String jsonString = jsonEncode(dataToSave);
+    await prefs.setString('stepList', jsonString);
+  }

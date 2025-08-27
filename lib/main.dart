@@ -7,6 +7,7 @@ import 'calo.dart';
 import 'date.dart';
 import 'package:fl_chart/fl_chart.dart';
 // --- アプリケーションのエントリーポイント ---
+
 void main() {
   runApp(const MyApp());
 }
@@ -46,6 +47,10 @@ class _PedometerScreenState extends State<PedometerScreen> {
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
 
+  final List<BarChartGroupData> barGroups = [];//日付と歩数  
+
+  late int bord;
+  int ind=1;
   //double walk_speed= 1.33;//平均の歩行の速さ　[m/s]
   //double walk_distance= 0.0;//歩行距離のへんすう[km]
 
@@ -63,6 +68,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
     if (mounted) {
       setState(() {
         _stepCount = savedSteps;
+        bord=_stepCount+10;
       });
     }
     _startListening(); // センサーの監視を開始
@@ -75,8 +81,16 @@ class _PedometerScreenState extends State<PedometerScreen> {
       final todaydate = _dateManager.getTodaydate();
       // 日付が変わったかチェック
       if (todaydate != _currentDate) {
+        barGroups.add(
+          BarChartGroupData(x: ind, barRods: [
+          BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
+  ]),
+);
+        ind++;
+       //graphで追加
         // 日付が変わっていたら、前日(_currentDateString)の歩数(_stepCount)を保存
         await _dateManager.saveStep(_currentDate, _stepCount);
+        await _dateManager.saveStepList(_barGroups);
         
         // 新しい日のためにリセット
         if(mounted){
@@ -135,6 +149,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
                 context,
                 MaterialPageRoute(builder: (context) => NextState(
                   stepCount:_stepCount,
+                  barGroups :barGroups,
                 )),
               );
             },
@@ -164,23 +179,17 @@ class _PedometerScreenState extends State<PedometerScreen> {
           ],
         ),
       ),
-    //  bottomNavigationBar: Container(
-    //    height: 100, // 画像の高さ
-    //    width: MediaQuery.of(context).size.width, // 画面幅に設定
-    //    child: Image.network(
-    //      "https://gingerweb.jp/wp-content/uploads/2020/12/rectangle_large_type_2_7398bd1f4810549fd5a48efceb3067f5.jpg",
-    //      fit: BoxFit.fill, // 指定されたサイズいっぱいに引き伸ばす
-    //    ),
-    //  ),引き伸ばして画像を表示する
     );
   }
 }
 double distance=0.0;
 class NextState extends StatefulWidget {
   final int stepCount;
+  final List<BarChartGroupData> barGroups;
   const NextState({
     super.key,
-    required this.stepCount
+    required this.stepCount,
+    required this.barGroups
     });
 
   @override
@@ -191,6 +200,7 @@ class NextPage extends State<NextState> {
   late int _localStepCount;
   late double consume_cal;
   late double consumeFat;
+  late List<BarChartGroupData> _barGroups;
 void calo(){
       setState((){
         final calClass=Calorie(_localStepCount);
@@ -203,11 +213,10 @@ void calo(){
     initState(){
       super.initState();
       _localStepCount=widget.stepCount;
+      _barGroups=widget.barGroups;
       calo(); 
       
     }
-
-
   @override
   Widget build(BuildContext context) {
     
@@ -223,36 +232,26 @@ void calo(){
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 32), // スペーサー
-              SizedBox(
-                height: 250, // チャートに固定の高さを与える
-                width: 300, // チャートに固定の幅を与える
-                child: BarChart(
-                  BarChartData(
-                    borderData: FlBorderData(
-                      border: const Border(
-                        top: BorderSide.none,
-                        right: BorderSide.none,
-                        left: BorderSide(width: 1),
-                        bottom: BorderSide(width: 1),
+                const SizedBox(height: 32), // スペーサー
+        SingleChildScrollView( // グラフ全体を横スクロールさせる
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  // グラフの幅を動的に計算
+                  width: 300+_barGroups.length * 50.0, // 各棒の幅(15) + グループ間のスペース(10) + 余白
+                  height: 500, // チャートに固定の高さを与える
+                  child: BarChart(
+                    BarChartData(
+                      borderData: FlBorderData(
+                        border: const Border(
+                          top: BorderSide.none,
+                          right: BorderSide.none,
+                          left: BorderSide(width: 1),
+                          bottom: BorderSide(width: 1),
+                        ),
                       ),
+                      groupsSpace: 10,
+                      barGroups: _barGroups, // すべてのデータをまとめて渡す
                     ),
-                    groupsSpace: 10,
-                    barGroups: [
-                      BarChartGroupData(x: 1, barRods: [
-                        BarChartRodData(fromY: 0, toY: 4, width: 15, color: Colors.amber),
-                      ]),
-                      BarChartGroupData(x: 2, barRods: [
-                        BarChartRodData(fromY: 0, toY: 7, width: 15, color: Colors.indigo),
-                      ]),
-                      BarChartGroupData(x: 3, barRods: [
-                        BarChartRodData(fromY: 0, toY: 10, width: 15, color: Colors.amber),
-                      ]),
-                      BarChartGroupData(x: 4, barRods: [
-                        BarChartRodData(fromY: 0, toY: 8, width: 15, color: Colors.indigo),
-                      ]),
-                      
-                    ],
                   ),
                 ),
               ),
