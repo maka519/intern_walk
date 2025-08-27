@@ -5,7 +5,9 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'calo.dart';
 import 'date.dart';
+import 'package:intl/intl.dart';
 
+final formatter = NumberFormat("#,###");
 // --- アプリケーションのエントリーポイント ---
 void main() {
   runApp(const MyApp());
@@ -81,7 +83,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
         // 新しい日のためにリセット
         if (mounted) {
           setState(() {
-            _stepCount = 10000; // 歩数カウントを0に
+            _stepCount = 0; // 歩数カウントを0に
             _currentDate = todaydate; // 現在の日付を更新
           });
         }
@@ -119,7 +121,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('万数計'),
-        backgroundColor: Colors.teal.shade100,
+        backgroundColor: Colors.blue.shade100,
         actions: [
           IconButton(
             icon: const Icon(Icons.arrow_forward),
@@ -137,6 +139,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
       body: Stack(
         children: [
           //背景画像設定
+          /*
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -147,15 +150,17 @@ class _PedometerScreenState extends State<PedometerScreen> {
               ),
             ),
           ),
-
+          */
           Center(
             child: Container(
+              /*
               padding: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.blue, width: 5.0),
                 borderRadius: BorderRadius.circular(10.0),
                 color: Colors.white.withOpacity(0.9),
               ),
+              */
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -167,12 +172,13 @@ class _PedometerScreenState extends State<PedometerScreen> {
                     '今日の歩数:',
                     style: TextStyle(fontSize: 32, color: Colors.grey),
                   ),
+
                   Text(
-                    '$_stepCount',
+                    '${formatter.format(_stepCount)}',
                     style: TextStyle(
-                      fontSize: _stepCount > 1000000 ? 100 : 60,
+                      fontSize: _stepCount > 1000000000 ? 100 : 60,
                       fontWeight: FontWeight.bold,
-                      color: Colors.teal,
+                      color: Colors.blue,
                     ),
                   ),
                 ],
