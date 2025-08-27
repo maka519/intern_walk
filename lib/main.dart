@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'calo.dart';
 import 'date.dart';
 
 // --- アプリケーションのエントリーポイント ---
@@ -125,7 +126,9 @@ class _PedometerScreenState extends State<PedometerScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NextState()),
+                MaterialPageRoute(builder: (context) => NextState(
+                  stepCount:_stepCount,
+                )),
               );
             },
           ),
@@ -157,18 +160,53 @@ class _PedometerScreenState extends State<PedometerScreen> {
     );
   }
 }
-
+double distance=0.0;
 class NextState extends StatefulWidget {
-  const NextState({super.key});
+  final int stepCount;
+  const NextState({
+    super.key,
+    required this.stepCount
+    });
 
   @override
   State<NextState> createState() => NextPage();
 }
 class NextPage extends State<NextState> {
   final TextEditingController textController = TextEditingController();
+  late int _localStepCount;
+  late double consume_cal;
+  late double consumeFat;
+void calo(){
+      setState((){
+        final calClass=Calorie(_localStepCount);
+        consume_cal=calClass.Kcal;
+        consumeFat=calClass.fat;
+      }
+      );
+    }
+    @override
+    initState(){
+      super.initState();
+      _localStepCount=widget.stepCount;
+      calo(); 
+      
+    }
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: const Text('次のページ')));
+    
+    
+    return Scaffold(appBar: AppBar(title: const Text('次のページ')),
+    body: Center(
+        child: Text(
+          '消費カロリー${consume_cal.toStringAsFixed(2)}Kcal\n脂肪燃焼量${consumeFat.toStringAsFixed(2)}g',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
   }
 }
