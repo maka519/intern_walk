@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 //歩行速度を1.33 m/s
 // --- 歩数計のメイン画面 ---
 class PedometerScreen extends StatefulWidget {
@@ -39,15 +40,14 @@ class _PedometerScreenState extends State<PedometerScreen> {
   final DateManager _dateManager = DateManager(); // DateManagerのインスタンスを作成
   String _currentDate = ''; // 現在カウントしている日付を保持
 
-
   // 歩数としてカウントするための揺れの大きさのしきい値
   final double _stepThreshold = 11.5;
 
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
 
-  double walk_speed= 1.33;//平均の歩行の速さ　[m/s]
-  double walk_distance= 0.0;//歩行距離のへんすう[km]
+  double walk_speed = 1.33; //平均の歩行の速さ　[m/s]
+  double walk_distance = 0.0; //歩行距離のへんすう[km]
 
   @override
   void initState() {
@@ -55,7 +55,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
     _initializePedometer();
   }
 
-    void _initializePedometer() async {
+  void _initializePedometer() async {
     // 今日の日付を取得し、その日付の歩数を読み込む
     _currentDate = _dateManager.getTodaydate();
     final savedSteps = await _dateManager.loadStep(_currentDate);
@@ -71,15 +71,15 @@ class _PedometerScreenState extends State<PedometerScreen> {
   void _startListening() {
     _accelerometerSubscription = accelerometerEventStream().listen((
       AccelerometerEvent event,
-    ) async{
+    ) async {
       final todaydate = _dateManager.getTodaydate();
       // 日付が変わったかチェック
       if (todaydate != _currentDate) {
         // 日付が変わっていたら、前日(_currentDateString)の歩数(_stepCount)を保存
         await _dateManager.saveStep(_currentDate, _stepCount);
-        
+
         // 新しい日のためにリセット
-        if(mounted){
+        if (mounted) {
           setState(() {
             _stepCount = 0; // 歩数カウントを0に
             _currentDate = todaydate; // 現在の日付を更新
@@ -126,85 +126,103 @@ class _PedometerScreenState extends State<PedometerScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NextState(
-                  stepCount:_stepCount,
-                )),
+                MaterialPageRoute(
+                  builder: (context) => NextState(stepCount: _stepCount),
+                ),
               );
             },
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              '日付: $_currentDate', // 今日の日付を表示
-              style: const TextStyle(fontSize: 24, color: Colors.grey),
-            ),
-            const Text(
-              '今日の歩数:',
-              style: TextStyle(fontSize: 32, color: Colors.grey),
-            ),
-            Text(
-              '$_stepCount',
-              style: const TextStyle(
-                fontSize: 100,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
+      body: Stack(
+        children: [
+          //背景画像設定
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('images/bg_dote.jpg'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+
+          Center(
+            child: Container(
+              padding: const EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.blue, width: 5.0),
+                borderRadius: BorderRadius.circular(10.0),
+                color: Colors.white.withOpacity(0.9),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    '日付: $_currentDate', // 今日の日付を表示
+                    style: const TextStyle(fontSize: 24, color: Colors.grey),
+                  ),
+                  const Text(
+                    '今日の歩数:',
+                    style: TextStyle(fontSize: 32, color: Colors.grey),
+                  ),
+                  Text(
+                    '$_stepCount',
+                    style: const TextStyle(
+                      fontSize: 100,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
-double distance=0.0;
+
+double distance = 0.0;
+
 class NextState extends StatefulWidget {
   final int stepCount;
-  const NextState({
-    super.key,
-    required this.stepCount
-    });
+  const NextState({super.key, required this.stepCount});
 
   @override
   State<NextState> createState() => NextPage();
 }
+
 class NextPage extends State<NextState> {
   final TextEditingController textController = TextEditingController();
   late int _localStepCount;
   late double consume_cal;
   late double consumeFat;
-void calo(){
-      setState((){
-        final calClass=Calorie(_localStepCount);
-        consume_cal=calClass.Kcal;
-        consumeFat=calClass.fat;
-      }
-      );
-    }
-    @override
-    initState(){
-      super.initState();
-      _localStepCount=widget.stepCount;
-      calo(); 
-      
-    }
+  void calo() {
+    setState(() {
+      final calClass = Calorie(_localStepCount);
+      consume_cal = calClass.Kcal;
+      consumeFat = calClass.fat;
+    });
+  }
 
+  @override
+  initState() {
+    super.initState();
+    _localStepCount = widget.stepCount;
+    calo();
+  }
 
   @override
   Widget build(BuildContext context) {
-    
-    
-    return Scaffold(appBar: AppBar(title: const Text('次のページ')),
-    body: Center(
+    return Scaffold(
+      appBar: AppBar(title: const Text('次のページ')),
+      body: Center(
         child: Text(
           '消費カロリー${consume_cal.toStringAsFixed(2)}Kcal\n脂肪燃焼量${consumeFat.toStringAsFixed(2)}g',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
     );
