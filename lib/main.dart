@@ -165,11 +165,12 @@ class NextPage extends State<NextState> {
   final TextEditingController textController = TextEditingController();
   late int _localStepCount;
   late double consume_cal;
-  
+  late double consumeFat;
 void calo(){
       setState((){
-        final Cal_class=Calorie(_localStepCount);
-        consume_cal=Cal_class.Kcal;
+        final calClass=Calorie(_localStepCount);
+        consume_cal=calClass.Kcal;
+        consumeFat=calClass.fat;
       }
       );
     }
@@ -189,7 +190,7 @@ void calo(){
     return Scaffold(appBar: AppBar(title: const Text('次のページ')),
     body: Center(
         child: Text(
-          '${consume_cal.toStringAsFixed(2)}Kcal',
+          '消費カロリー${consume_cal.toStringAsFixed(2)}Kcal\n脂肪燃焼量${consumeFat.toStringAsFixed(2)}g',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
