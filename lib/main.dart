@@ -124,7 +124,8 @@ class _PedometerScreenState extends State<PedometerScreen> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(
+          //背景画像設定
+          /*Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -134,32 +135,33 @@ class _PedometerScreenState extends State<PedometerScreen> {
               ),
             ),
           ),
+          */
           Center(
-            child: Container(
+            //枠の追加
+            /*child: Container(
               padding: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.blue, width: 5.0),
                 borderRadius: BorderRadius.circular(10.0),
                 color: Colors.white.withOpacity(0.9),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text(
-                    '歩数:',
-                    style: TextStyle(fontSize: 32, color: Colors.grey),
+              ),*/
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  '歩数:',
+                  style: TextStyle(fontSize: 32, color: Colors.grey),
+                ),
+                Text(
+                  '$_stepCount',
+                  style: const TextStyle(
+                    fontSize: 100,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.teal,
                   ),
-                  Text(
-                    '$_stepCount',
-                    style: const TextStyle(
-                      fontSize: 100,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
