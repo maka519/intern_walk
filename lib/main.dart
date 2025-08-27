@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'calo.dart';
+import 'date.dart';
+
 // --- アプリケーションのエントリーポイント ---
 void main() {
   runApp(const MyApp());
@@ -34,21 +36,11 @@ class _PedometerScreenState extends State<PedometerScreen> {
   int _stepCount = 0;
   StreamSubscription? _accelerometerSubscription;
 
-  //ローカルストレージ
-  void _loadCounter() async {
-    final prefs = await SharedPreferences.getInstance();
-    //UIを更新
-    setState((){
-      _stepCount = prefs.getInt('counter') ?? 0; // キーから値を取得、なければ0
-    });
-  }
+  final DateManager _dateManager = DateManager(); // DateManagerのインスタンスを作成
+  String _currentDate = ''; // 現在カウントしている日付を保持
 
-    void _saveCounter() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('counter', _stepCount); // キーに値を保存
-  }
+
   // 歩数としてカウントするための揺れの大きさのしきい値
-  // この値はデバイスや歩き方によって調整が必要です
   final double _stepThreshold = 11.5;
 
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
@@ -60,15 +52,41 @@ class _PedometerScreenState extends State<PedometerScreen> {
   @override
   void initState() {
     super.initState();
-    _startListening();
-    _loadCounter();
+    _initializePedometer();
+  }
+
+    void _initializePedometer() async {
+    // 今日の日付を取得し、その日付の歩数を読み込む
+    _currentDate = _dateManager.getTodaydate();
+    final savedSteps = await _dateManager.loadStep(_currentDate);
+
+    if (mounted) {
+      setState(() {
+        _stepCount = savedSteps;
+      });
+    }
+    _startListening(); // センサーの監視を開始
   }
 
   void _startListening() {
-    // 加速度センサーからのデータストリームを購読
     _accelerometerSubscription = accelerometerEventStream().listen((
       AccelerometerEvent event,
-    ) {
+    ) async{
+      final todaydate = _dateManager.getTodaydate();
+      // 日付が変わったかチェック
+      if (todaydate != _currentDate) {
+        // 日付が変わっていたら、前日(_currentDateString)の歩数(_stepCount)を保存
+        await _dateManager.saveStep(_currentDate, _stepCount);
+        
+        // 新しい日のためにリセット
+        if(mounted){
+          setState(() {
+            _stepCount = 0; // 歩数カウントを0に
+            _currentDate = todaydate; // 現在の日付を更新
+          });
+        }
+      }
+
       // 3軸の加速度からベクトル（揺れの大きさ）を計算
       double magnitude = sqrt(
         pow(event.x, 2) + pow(event.y, 2) + pow(event.z, 2),
@@ -79,19 +97,13 @@ class _PedometerScreenState extends State<PedometerScreen> {
         setState(() {
           _stepCount++;
         });
+        await _dateManager.saveStep(_currentDate, _stepCount);
         _isPeak = true; // ピーク状態にする
       }
       // 揺れの大きさがしきい値を下回り、かつピーク状態だった場合
       else if (magnitude < _stepThreshold && _isPeak) {
         _isPeak = false; // 次のステップを検出できるようにリセット
       }
-    });
-  }
-
-  // カウントをリセットする関数（日付変わった時に使う）
-  void _resetCount() {
-    setState(() {
-      _stepCount = 0;
     });
   }
 
@@ -126,8 +138,12 @@ class _PedometerScreenState extends State<PedometerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text(
+              '日付: $_currentDate', // 今日の日付を表示
+              style: const TextStyle(fontSize: 24, color: Colors.grey),
+            ),
             const Text(
-              '歩数:',
+              '今日の歩数:',
               style: TextStyle(fontSize: 32, color: Colors.grey),
             ),
             Text(
@@ -140,12 +156,6 @@ class _PedometerScreenState extends State<PedometerScreen> {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _saveCounter,
-        tooltip: 'Save',
-        backgroundColor: Colors.teal,
-        child: const Icon(Icons.save, color: Colors.white),
       ),
     );
   }
