@@ -7,6 +7,7 @@ import 'calo.dart';
 import 'date.dart';
 import 'package:intl/intl.dart';
 import 'history.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 final formatter = NumberFormat("#,###");
 // --- アプリケーションのエントリーポイント ---
