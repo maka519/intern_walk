@@ -64,10 +64,14 @@ class _PedometerScreenState extends State<PedometerScreen> {
     // 今日の日付を取得し、その日付の歩数を読み込む
     _currentDate = _dateManager.getTodaydate();
     final savedSteps = await _dateManager.loadStep(_currentDate);
-
+    final savedList = await _dateManager.loadList(_currentDate,barGroups);
+    final savedind  = await _dateManager.loadind(_currentDate);
     if (mounted) {
       setState(() {
         _stepCount = savedSteps;
+        barGroups=savedList;
+        bord=_stepCount+10;
+        ind =savedind;
       });
     }
     _startListening(); // センサーの監視を開始
@@ -82,6 +86,14 @@ class _PedometerScreenState extends State<PedometerScreen> {
       if (todaydate != _currentDate) {
         // 日付が変わっていたら、前日(_currentDateString)の歩数(_stepCount)を保存
         await _dateManager.saveStep(_currentDate, _stepCount);
+        barGroups.add(
+          BarChartGroupData(x: ind, barRods: [
+          BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
+        ]),
+          );
+        ind++;
+        await _dateManager.saveStepList(_currentDate,barGroups);
+        await _dateManager.saveStep(_currentDate, ind);
 
         // 新しい日のためにリセット
         if (mounted) {
