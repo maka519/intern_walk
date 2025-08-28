@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'calo.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'main.dart';
 import 'history.dart';
 import 'date.dart';
+import 'home.dart';
 
 double distance = 0.0;
 
-class NextState extends StatefulWidget {
+class barState extends StatefulWidget {
   final int stepCount;
   final List<BarChartGroupData> barGroups;
   final DateManager dateManager;
 
-  const NextState({
+  const barState({
     super.key,
     required this.stepCount,
     required this.barGroups,
@@ -20,10 +20,10 @@ class NextState extends StatefulWidget {
   });
 
   @override
-  State<NextState> createState() => NextPage();
+  State<barState> createState() => barPage();
 }
 
-class NextPage extends State<NextState> {
+class barPage extends State<barState> {
   final TextEditingController textController = TextEditingController();
   late int _localStepCount;
   late double consume_cal;
@@ -49,7 +49,7 @@ class NextPage extends State<NextState> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('次のページ'),
+        title: const Text('歩数グラフ'),
         automaticallyImplyLeading: false,
       ),
       body: Center(
@@ -111,7 +111,7 @@ class NextPage extends State<NextState> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PedometerScreen()),
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
                 );
               },
             ),

@@ -4,6 +4,7 @@ import 'package:team/bar.dart';
 import 'date.dart';
 import 'main.dart';
 import 'calo.dart';
+import 'home.dart';
 
 class HistoryState extends StatefulWidget {
   final DateManager dateManager;
@@ -119,7 +120,7 @@ class HistoryPage extends State<HistoryState> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PedometerScreen()),
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
                 );
               },
             ),
@@ -129,7 +130,7 @@ class HistoryPage extends State<HistoryState> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NextState(
+                    builder: (context) => barState(
                       stepCount: 0,
                       dateManager: widget.dateManager,
                       barGroups: [],

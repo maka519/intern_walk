@@ -129,7 +129,7 @@
                                                 <action selector="performFindPanelAction:" target="-1" id="WD3-Gg-5AJ"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Find Next" tag="2" keyEquivalent="g" id="q09-fT-Sye">
+                                        <menuItem title="Find bar" tag="2" keyEquivalent="g" id="q09-fT-Sye">
                                             <connections>
                                                 <action selector="performFindPanelAction:" target="-1" id="NDo-RZ-v9R"/>
                                             </connections>

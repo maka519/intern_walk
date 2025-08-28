@@ -59,7 +59,7 @@ include(flutter/generated_plugins.cmake)
 
 
 # === Installation ===
-# Support files are copied into place next to the executable, so that it can
+# Support files are copied into place bar to the executable, so that it can
 # run in place. This is done instead of making a separate bundle (as on Linux)
 # so that building and running from within Visual Studio will work.
 set(BUILD_BUNDLE_DIR "$<TARGET_FILE_DIR:${BINARY_NAME}>")
