@@ -3,15 +3,15 @@ import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:convert';
 
-class DateManager{
+class DateManager {
   //今日の日付を取得
-  String getTodaydate(){
+  String getTodaydate([DateTime? date]) {
     final now = DateTime.now();
-    final formatter = DateFormat('yyyy-MM-dd');//形式設定
+    final formatter = DateFormat('yyyy-MM-dd'); //形式設定
     return formatter.format(now);
   }
 
-//歩数の保存
+  //歩数の保存
   Future<void> saveStep(String dateString, int steps) async {
     final prefs = await SharedPreferences.getInstance();
     final key = 'steps_$dateString';
@@ -28,6 +28,7 @@ class DateManager{
   bool DateChange(String lastSavedDate) {
     return lastSavedDate != getTodaydate();
   }
+
 //棒グラフを保存
  Future<void> saveStepList(String currentDate,List<BarChartGroupData> barGroups) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -92,3 +93,5 @@ Future<List<BarChartGroupData>> loadList(String currentDate,List<BarChartGroupDa
   }
 
 }
+}
+
