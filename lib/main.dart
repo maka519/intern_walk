@@ -38,7 +38,7 @@ class PedometerScreen extends StatefulWidget {
 }
 
 class _PedometerScreenState extends State<PedometerScreen> {
-  int _stepCount = 10000;
+  int _stepCount = 0;
   StreamSubscription? _accelerometerSubscription;
 
   final DateManager _dateManager = DateManager(); // DateManagerのインスタンスを作成
@@ -187,6 +187,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
                       color: Colors.blue,
                     ),
                   ),
+
                 ],
               ),
             ),
