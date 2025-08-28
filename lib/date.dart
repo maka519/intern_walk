@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 class DateManager {
   //今日の日付を取得
-  String getTodaydate() {
+  String getTodaydate([DateTime? date]) {
     final now = DateTime.now();
     final formatter = DateFormat('yyyy-MM-dd'); //形式設定
     return formatter.format(now);

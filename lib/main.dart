@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'calo.dart';
 import 'date.dart';
 import 'package:intl/intl.dart';
+import 'history.dart';
 
 final formatter = NumberFormat("#,###");
 // --- アプリケーションのエントリーポイント ---
@@ -180,7 +181,17 @@ class _PedometerScreenState extends State<PedometerScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: [
-            IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+            IconButton(
+              icon: const Icon(Icons.menu), 
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HistoryState(dateManager: _dateManager),
+                  ),
+                );
+              },
+            ),
             IconButton(icon: const Icon(Icons.home), onPressed: () {}),
             IconButton(
               icon: const Icon(Icons.bar_chart),
