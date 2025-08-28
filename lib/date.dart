@@ -3,6 +3,29 @@ import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:convert';
 class DateManager {
+
+    /// すでに起動したことがあれば、falseを返します。
+  Future<bool> isFirstLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    // 'first_launch_date' というキーでデータを探す
+    final firstLaunchDate = prefs.getString('first_launch_date');
+    //初めての起動
+    if (firstLaunchDate == null) {
+      final todayString = getTodaydate();
+      // 今日を初回起動日として保存する
+      await prefs.setString('first_launch_date', todayString);
+      return true; // 初回起動なので true を返す
+    }
+    //初回起動ではない
+    return false;
+  }
+
+  /// 保存されている初回起動日を読み込む
+  Future<String?> loadFirstLaunchDate() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('first_launch_date');
+  }
+
   //今日の日付を取得
   String getTodaydate([DateTime? date]) {
     final now = DateTime.now();

@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Home',
       theme: ThemeData(primarySwatch: Colors.teal, useMaterial3: true),
+
       home: const HomeScreen(),
     );
   }
