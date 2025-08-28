@@ -112,32 +112,60 @@ class HistoryPage extends State<HistoryState> {
       bottomNavigationBar: BottomAppBar(
         color: Colors.blue.shade100,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
-            IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                );
-              },
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
             ),
-            IconButton(
-              icon: const Icon(Icons.bar_chart),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => barState(
-                      stepCount: 0,
-                      dateManager: widget.dateManager,
-                      barGroups: [],
+
+            const VerticalDivider(
+              color: Colors.grey, // 線の色
+              thickness: 1, // 線の太さ
+              indent: 10, // 上の余白
+              endIndent: 10, // 下の余白
+            ),
+
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                  );
+                },
+              ),
+            ),
+
+            const VerticalDivider(
+              color: Colors.grey, // 線の色
+              thickness: 1, // 線の太さ
+              indent: 10, // 上の余白
+              endIndent: 10, // 下の余白
+            ),
+
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.bar_chart),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => barState(
+                        stepCount: 0,
+                        dateManager: widget.dateManager,
+                        barGroups: [],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ],
         ),

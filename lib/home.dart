@@ -129,7 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('万数計'),
+        title: const Text('万歩計'),
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.blue.shade100,
       ),
       body: Stack(
@@ -189,33 +190,58 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: [
-            IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        HistoryState(dateManager: _dateManager),
-                  ),
-                );
-              },
-            ),
-            IconButton(icon: const Icon(Icons.home), onPressed: () {}),
-            IconButton(
-              icon: const Icon(Icons.bar_chart),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => barState(
-                      stepCount: _stepCount,
-                      dateManager: _dateManager,
-                      barGroups: barGroups,
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          HistoryState(dateManager: _dateManager),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
+            ),
+
+            const VerticalDivider(
+              color: Colors.grey, // 線の色
+              thickness: 1, // 線の太さ
+              indent: 10, // 上の余白
+              endIndent: 10, // 下の余白
+            ),
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(icon: const Icon(Icons.home), onPressed: () {}),
+            ),
+            const VerticalDivider(
+              color: Colors.grey, // 線の色
+              thickness: 1, // 線の太さ
+              indent: 10, // 上の余白
+              endIndent: 10, // 下の余白
+            ),
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.bar_chart),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => barState(
+                        stepCount: _stepCount,
+                        dateManager: _dateManager,
+                        barGroups: barGroups,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

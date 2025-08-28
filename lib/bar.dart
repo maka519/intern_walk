@@ -94,28 +94,59 @@ class barPage extends State<barState> {
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: [
-            IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        HistoryState(dateManager: widget.dateManager),
-                  ),
-                );
-              },
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          HistoryState(dateManager: widget.dateManager),
+                    ),
+                  );
+                },
+              ),
             ),
-            IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                );
-              },
+
+            const VerticalDivider(
+              color: Colors.grey, // 線の色
+              thickness: 1, // 線の太さ
+              indent: 10, // 上の余白
+              endIndent: 10, // 下の余白
             ),
-            IconButton(icon: const Icon(Icons.bar_chart), onPressed: () {}),
+
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                  );
+                },
+              ),
+            ),
+
+            const VerticalDivider(
+              color: Colors.grey, // 線の色
+              thickness: 1, // 線の太さ
+              indent: 10, // 上の余白
+              endIndent: 10, // 下の余白
+            ),
+
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.bar_chart),
+                onPressed: () {},
+              ),
+            ),
           ],
         ),
       ),
