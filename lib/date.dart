@@ -4,6 +4,18 @@ import 'package:fl_chart/fl_chart.dart';
 import 'dart:convert';
 class DateManager {
 
+
+    Future<void> saveTotalSteps(int totalSteps) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('total_steps', totalSteps);
+  }
+
+  /// 総歩数を読み込みます。
+  Future<int> loadTotalSteps() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('total_steps') ?? 0;
+  }
+
     /// すでに起動したことがあれば、falseを返します。
   Future<bool> isFirstLaunch() async {
     final prefs = await SharedPreferences.getInstance();
@@ -47,10 +59,7 @@ class DateManager {
     return prefs.getInt(key) ?? 0;
   }
 
-  bool DateChange(String lastSavedDate) {
-    return lastSavedDate != getTodaydate();
-  }
-   Future<void> saveStepList(String currentDate,List<BarChartGroupData> barGroups) async {
+  Future<void> saveStepList(String dateString, List<BarChartGroupData> barGroups) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final List<Map<String, dynamic>> dataToSave = barGroups.map((group) {
       return {
@@ -59,14 +68,16 @@ class DateManager {
           return {
             'toY': rod.toY,
             'width': rod.width,
-            'color': rod.color?.toARGB32(),
+            'color': rod.color?.value, // Colorをintに変換
           };
         }).toList(),
       };
     }).toList();
     final String jsonString = jsonEncode(dataToSave);
-    await prefs.setString(currentDate, jsonString);
+    final key = 'bar_data_$dateString'; // キーを 'bar_data_' から始める
+    await prefs.setString(key, jsonString);
   }
+
   //ローカルストレージからロード
 Future<List<BarChartGroupData>> loadList(String currentDate,List<BarChartGroupData> barGroups)async{
   final SharedPreferences prefs = await SharedPreferences.getInstance();
