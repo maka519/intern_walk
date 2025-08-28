@@ -5,13 +5,11 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'calo.dart';
 import 'date.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'history.dart';
 
 final formatter = NumberFormat("#,###");
 // --- アプリケーションのエントリーポイント ---
-
 void main() {
   runApp(const MyApp());
 }
@@ -51,12 +49,6 @@ class _PedometerScreenState extends State<PedometerScreen> {
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
 
-  List<BarChartGroupData> barGroups = [];//日付と歩数  
-
-  late int bord;
-  int ind=1;
-  //double walk_speed= 1.33;//平均の歩行の速さ　[m/s]
-  //double walk_distance= 0.0;//歩行距離のへんすう[km]
   double walk_speed = 1.33; //平均の歩行の速さ　[m/s]
   double walk_distance = 0.0; //歩行距離のへんすう[km]
 
@@ -70,14 +62,10 @@ class _PedometerScreenState extends State<PedometerScreen> {
     // 今日の日付を取得し、その日付の歩数を読み込む
     _currentDate = _dateManager.getTodaydate();
     final savedSteps = await _dateManager.loadStep(_currentDate);
-    final savedList = await _dateManager.loadList(_currentDate,barGroups);
-    final savedind  = await _dateManager.loadind(_currentDate);
+
     if (mounted) {
       setState(() {
         _stepCount = savedSteps;
-        barGroups=savedList;
-        bord=_stepCount+10;
-        ind =savedind;
       });
     }
     _startListening(); // センサーの監視を開始
@@ -90,20 +78,8 @@ class _PedometerScreenState extends State<PedometerScreen> {
       final todaydate = _dateManager.getTodaydate();
       // 日付が変わったかチェック
       if (todaydate != _currentDate) {
-        barGroups.add(
-          BarChartGroupData(x: ind, barRods: [
-          BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
-  ]),
-);
-        ind++;
-       //graphで追加
         // 日付が変わっていたら、前日(_currentDateString)の歩数(_stepCount)を保存
         await _dateManager.saveStep(_currentDate, _stepCount);
-
-        await _dateManager.saveStepList(_currentDate,barGroups);
-         await _dateManager.saveStep(_currentDate, ind);
-
-
 
         // 新しい日のためにリセット
         if (mounted) {
@@ -145,27 +121,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-         flexibleSpace: Container(
-              decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: NetworkImage("https://gingerweb.jp/wp-content/uploads/2020/12/rectangle_large_type_2_7398bd1f4810549fd5a48efceb3067f5.jpg",),
-                  fit: BoxFit.cover),
-            )
-        ),
         title: const Text('万数計'),
-        backgroundColor: Colors.teal.shade100,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_forward),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NextState(
-                  stepCount:_stepCount,
-                  barGroups :barGroups,
-                )),
-              );
-            },
         backgroundColor: Colors.blue.shade100,
       ),
       body: Stack(
@@ -216,8 +172,6 @@ class _PedometerScreenState extends State<PedometerScreen> {
                 ],
               ),
             ),
-
-          
           ),
         ],
       ),
@@ -253,20 +207,6 @@ class _PedometerScreenState extends State<PedometerScreen> {
           ],
         ),
       ),
-   floatingActionButton: FloatingActionButton(
-      onPressed: ()async{
-       await _dateManager.rmList(_currentDate);//棒グラフ破壊
-       await _dateManager.rmind(_currentDate);//ind破壊
-//         barGroups.add(
-//          BarChartGroupData(x: ind, barRods: [
-//          BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
-//          ]),
-//            );
-//        ind++;
-//        await _dateManager.saveStepList(_currentDate,barGroups);
-//         await _dateManager.saveStep(_currentDate, ind);
-    },
-    ),
     );
   }
 }
@@ -275,12 +215,6 @@ double distance = 0.0;
 
 class NextState extends StatefulWidget {
   final int stepCount;
-  final List<BarChartGroupData> barGroups;
-  const NextState({
-    super.key,
-    required this.stepCount,
-    required this.barGroups
-    });
   const NextState({super.key, required this.stepCount});
 
   @override
@@ -292,32 +226,6 @@ class NextPage extends State<NextState> {
   late int _localStepCount;
   late double consume_cal;
   late double consumeFat;
-  late List<BarChartGroupData> _barGroups;
-void calo(){
-      setState((){
-        final calClass=Calorie(_localStepCount);
-        consume_cal=calClass.Kcal;
-        consumeFat=calClass.fat;
-      }
-      );
-    }
-    @override
-    initState(){
-      super.initState();
-      _localStepCount=widget.stepCount;
-      _barGroups=widget.barGroups;
-      calo(); 
-      
-    }
-  @override
-  Widget build(BuildContext context) {
-    
-    
-    return Scaffold(appBar: AppBar(title: const Text('次のページ')),
-    body: Center(
-      child :Column(
-        children :[
-          Text(
   void calo() {
     setState(() {
       final calClass = Calorie(_localStepCount);
@@ -362,34 +270,7 @@ void calo(){
             IconButton(icon: const Icon(Icons.bar_chart), onPressed: () {}),
           ],
         ),
-                const SizedBox(height: 32), // スペーサー
-        SingleChildScrollView( // グラフ全体を横スクロールさせる
-                scrollDirection: Axis.horizontal,
-                child: SizedBox(
-                  // グラフの幅を動的に計算
-                  width: 300+_barGroups.length * 50.0, // 各棒の幅(15) + グループ間のスペース(10) + 余白
-                  height: 500, // チャートに固定の高さを与える
-                  child: BarChart(
-                    BarChartData(
-                      borderData: FlBorderData(
-                        border: const Border(
-                          top: BorderSide.none,
-                          right: BorderSide.none,
-                          left: BorderSide(width: 1),
-                          bottom: BorderSide(width: 1),
-                        ),
-                      ),
-                      groupsSpace: 10,
-                      barGroups: _barGroups, // すべてのデータをまとめて渡す
-                    ),
-                  ),
-                ),
-              ),
-        ]
       ),
-        
-      ),
-      
     );
   }
-} 
+}
