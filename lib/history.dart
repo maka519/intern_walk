@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'date.dart';
 import 'main.dart';
+import 'calo.dart';
 
 class HistoryState extends StatefulWidget {
   final DateManager dateManager;
@@ -68,19 +69,32 @@ class HistoryPage extends State<HistoryState> {
                   itemBuilder: (context, index) {
                     final dateString = sortedDates[index];
                     final steps = _historyData[dateString]!;
+
+                    //カロリー
+                    final calClass = Calorie(steps);
+                    final consumeCal = calClass.Kcal;
+                    final consumeFat = calClass.fat;
+                    
                     return Card(
                       child: ListTile(
                         leading: const Icon(Icons.directions_walk, color: Colors.blue),
-                        title: Text(_formatDisplayDate(dateString)),
-                        trailing: Text('${formatter.format(steps)} 歩'),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NextState(stepCount: steps),
-                            ),
-                          );
-                        },
+                        title: Text(
+                          _formatDisplayDate(dateString),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        subtitle: Text(
+                          '${consumeCal.toStringAsFixed(1)} Kcal  /  ${consumeFat.toStringAsFixed(1)} g',
+                          style: TextStyle(color: Colors.grey.shade600),
+                        ),
+                        trailing: Text(
+                          '${formatter.format(steps)}歩',
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue,
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -90,12 +104,13 @@ class HistoryPage extends State<HistoryState> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(icon: const Icon(Icons.menu), onPressed: () {
-              Navigator.pop(context);
+            IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.home), onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PedometerScreen()));
+            }),
+            IconButton(icon: const Icon(Icons.bar_chart), onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => NextState(stepCount: 0)));
             }),
-            IconButton(icon: const Icon(Icons.home), onPressed: () => Navigator.pop(context)),
-            IconButton(icon: const Icon(Icons.bar_chart), onPressed: () {}),
           ],
         ),
       ),
