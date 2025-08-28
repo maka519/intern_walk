@@ -31,12 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isPeak = false;
 
   List<BarChartGroupData> barGroups = [
-    BarChartGroupData(
-      x: 1,
-      barRods: [
-        BarChartRodData(toY: 30.toDouble(), width: 15, color: Colors.green),
-      ],
-    ),
+  
   ]; //日付と歩数
   late int bord;
   int ind = 1;
@@ -53,10 +48,31 @@ class _HomeScreenState extends State<HomeScreen> {
     final savedSteps = await _dateManager.loadStep(_currentDate);
     final savedList = await _dateManager.loadList(_currentDate, barGroups);
     final savedind = await _dateManager.loadind(_currentDate);
+    int indexBar=savedList.length;
+    debugPrint(indexBar.toString());
+    debugPrint('saveSteps: ${savedList}');
+    indexBar-=30;
+     if(indexBar<0){
+          debugPrint("インデックスが３０もないよ");
+          indexBar=0;
+          debugPrint("savedListの長さ${savedList.length.toString()}");
+          for(int i=indexBar;i<(savedList.length);i++){
+            debugPrint("for文中の${savedList.length.toString()}");
+            barGroups.add(savedList[i]);
+          }
+            debugPrint("pp");
+        }
+        else{
+          for(int i=indexBar;i<indexBar+30;i++){
+          debugPrint(i.toString());
+          barGroups.add(savedList[i]);
+        }
+        }
+        
     if (mounted) {
       setState(() {
         _stepCount = savedSteps;
-        barGroups = savedList;
+       
         bord = _stepCount + 10;
         ind = savedind;
       });
@@ -196,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        HistoryState(dateManager: _dateManager),
+                        HistoryState(dateManager: _dateManager,barGroups: barGroups),
                   ),
                 );
               },

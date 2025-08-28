@@ -101,7 +101,7 @@ class barPage extends State<barState> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        HistoryState(dateManager: widget.dateManager),
+                        HistoryState(dateManager: widget.dateManager,barGroups:_barGroups),
                   ),
                 );
               },

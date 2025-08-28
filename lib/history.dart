@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:team/bar.dart';
@@ -8,7 +9,8 @@ import 'home.dart';
 
 class HistoryState extends StatefulWidget {
   final DateManager dateManager;
-  const HistoryState({super.key, required this.dateManager});
+  final List<BarChartGroupData> barGroups;
+  const HistoryState({super.key, required this.dateManager,required this.barGroups});
 
   @override
   State<HistoryState> createState() => HistoryPage();
@@ -17,11 +19,12 @@ class HistoryState extends StatefulWidget {
 class HistoryPage extends State<HistoryState> {
   Map<String, int> _historyData = {};
   bool _isLoading = true;
-
+  late List<BarChartGroupData> _barGroups;
   @override
   void initState() {
     super.initState();
     _loadHistory();
+     _barGroups = widget.barGroups;
   }
 
   Future<void> _loadHistory() async {
@@ -133,7 +136,7 @@ class HistoryPage extends State<HistoryState> {
                     builder: (context) => barState(
                       stepCount: 0,
                       dateManager: widget.dateManager,
-                      barGroups: [],
+                      barGroups: _barGroups,
                     ),
                   ),
                 );

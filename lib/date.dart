@@ -48,10 +48,10 @@ class DateManager {
 Future<List<BarChartGroupData>> loadList(String currentDate,List<BarChartGroupData> barGroups)async{
   final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? jsonString = prefs.getString(currentDate);
+   late final List<BarChartGroupData>newBarGroups =[]; 
     if (jsonString != null) {
       final List<dynamic> loadedData = jsonDecode(jsonString);
-      barGroups.clear();
-      barGroups.addAll(loadedData.map((data) {
+      newBarGroups.addAll(loadedData.map((data) {
         return BarChartGroupData(
           x: (data['x'] as num).toInt(), // numをdoubleに明示的にキャスト
           barRods: (data['barRods'] as List).map((rodData) {
@@ -63,7 +63,7 @@ Future<List<BarChartGroupData>> loadList(String currentDate,List<BarChartGroupDa
         );
       }).toList());
     }
-    return barGroups;
+    return newBarGroups;
 }
 //棒グラフのストレージの破壊
  Future<void> rmList(String currentDate) async {
