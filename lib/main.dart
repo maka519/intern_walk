@@ -50,8 +50,9 @@ class _PedometerScreenState extends State<PedometerScreen> {
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
 
-  double walk_speed = 1.33; //平均の歩行の速さ　[m/s]
-  double walk_distance = 0.0; //歩行距離のへんすう[km]
+  List<BarChartGroupData> barGroups = [];//日付と歩数  
+  late int bord;
+  int ind=1;
 
   @override
   void initState() {
