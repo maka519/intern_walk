@@ -104,11 +104,13 @@ class HistoryPage extends State<HistoryState> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(icon: const Icon(Icons.menu), onPressed: () {
+            IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.home), onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PedometerScreen()));
+            }),
+            IconButton(icon: const Icon(Icons.bar_chart), onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => NextState(stepCount: 0)));
             }),
-            IconButton(icon: const Icon(Icons.home), onPressed: () => Navigator.pop(context)),
-            IconButton(icon: const Icon(Icons.bar_chart), onPressed: () {}),
           ],
         ),
       ),
