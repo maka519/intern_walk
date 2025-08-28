@@ -47,7 +47,7 @@ class _PedometerScreenState extends State<PedometerScreen> {
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
 
-  final List<BarChartGroupData> barGroups = [];//日付と歩数  
+  List<BarChartGroupData> barGroups = [];//日付と歩数  
 
   late int bord;
   int ind=1;
@@ -64,11 +64,14 @@ class _PedometerScreenState extends State<PedometerScreen> {
     // 今日の日付を取得し、その日付の歩数を読み込む
     _currentDate = _dateManager.getTodaydate();
     final savedSteps = await _dateManager.loadStep(_currentDate);
-
+    final savedList = await _dateManager.loadList(_currentDate,barGroups);
+    final savedind  = await _dateManager.loadind(_currentDate);
     if (mounted) {
       setState(() {
         _stepCount = savedSteps;
+        barGroups=savedList;
         bord=_stepCount+10;
+        ind =savedind;
       });
     }
     _startListening(); // センサーの監視を開始
@@ -90,8 +93,8 @@ class _PedometerScreenState extends State<PedometerScreen> {
        //graphで追加
         // 日付が変わっていたら、前日(_currentDateString)の歩数(_stepCount)を保存
         await _dateManager.saveStep(_currentDate, _stepCount);
-        await _dateManager.saveStepList(_barGroups);
-        
+        await _dateManager.saveStepList(_currentDate,barGroups);
+         await _dateManager.saveStep(_currentDate, ind);
         // 新しい日のためにリセット
         if(mounted){
           setState(() {
@@ -179,6 +182,20 @@ class _PedometerScreenState extends State<PedometerScreen> {
           ],
         ),
       ),
+   floatingActionButton: FloatingActionButton(
+      onPressed: ()async{
+       await _dateManager.rmList(_currentDate);//棒グラフ破壊
+       await _dateManager.rmind(_currentDate);//ind破壊
+//         barGroups.add(
+//          BarChartGroupData(x: ind, barRods: [
+//          BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
+//          ]),
+//            );
+//        ind++;
+//        await _dateManager.saveStepList(_currentDate,barGroups);
+//         await _dateManager.saveStep(_currentDate, ind);
+    },
+    ),
     );
   }
 }
