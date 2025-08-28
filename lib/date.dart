@@ -27,6 +27,23 @@ class DateManager {
   bool DateChange(String lastSavedDate) {
     return lastSavedDate != getTodaydate();
   }
+   Future<void> saveStepList(String currentDate,List<BarChartGroupData> barGroups) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<Map<String, dynamic>> dataToSave = barGroups.map((group) {
+      return {
+        'x': group.x,
+        'barRods': group.barRods.map((rod) {
+          return {
+            'toY': rod.toY,
+            'width': rod.width,
+            'color': rod.color?.toARGB32(),
+          };
+        }).toList(),
+      };
+    }).toList();
+    final String jsonString = jsonEncode(dataToSave);
+    await prefs.setString(currentDate, jsonString);
+  }
   //ローカルストレージからロード
 Future<List<BarChartGroupData>> loadList(String currentDate,List<BarChartGroupData> barGroups)async{
   final SharedPreferences prefs = await SharedPreferences.getInstance();

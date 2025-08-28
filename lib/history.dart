@@ -77,7 +77,7 @@ class HistoryPage extends State<HistoryState> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => NextState(stepCount: steps),
+                              builder: (context) => NextState(stepCount: steps,barGroups:[]),
                             ),
                           );
                         },
@@ -92,7 +92,7 @@ class HistoryPage extends State<HistoryState> {
           children: [
             IconButton(icon: const Icon(Icons.menu), onPressed: () {
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => NextState(stepCount: 0)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => NextState(stepCount: 0,barGroups: [],)));
             }),
             IconButton(icon: const Icon(Icons.home), onPressed: () => Navigator.pop(context)),
             IconButton(icon: const Icon(Icons.bar_chart), onPressed: () {}),
