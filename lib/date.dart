@@ -26,4 +26,49 @@ class DateManager {
   bool DateChange(String lastSavedDate) {
     return lastSavedDate != getTodaydate();
   }
+  //ローカルストレージからロード
+Future<List<BarChartGroupData>> loadList(String currentDate,List<BarChartGroupData> barGroups)async{
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? jsonString = prefs.getString(currentDate);
+    if (jsonString != null) {
+      final List<dynamic> loadedData = jsonDecode(jsonString);
+      barGroups.clear();
+      barGroups.addAll(loadedData.map((data) {
+        return BarChartGroupData(
+          x: (data['x'] as num).toInt(), // numをdoubleに明示的にキャスト
+          barRods: (data['barRods'] as List).map((rodData) {
+            return BarChartRodData(
+              toY: (rodData['toY'] as num).toDouble(), // numをdoubleに明示的にキャスト
+              width: (rodData['width'] as num).toDouble(), // numをdoubleに明示的にキャスト
+            );
+          }).toList(),
+        );
+      }).toList());
+    }
+    return barGroups;
+}
+//棒グラフのストレージの破壊
+ Future<void> rmList(String currentDate) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(currentDate);
+ }
+
+ Future<void> rmind(String currentDate) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('ind_${currentDate}');
+ }
+
+   Future<void> saveind(String dateString, int ind) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'ind_$dateString';
+    await prefs.setInt(key, ind);
+  }
+
+  //指定された日付の歩数を読み込み
+  Future<int> loadind(String dateString) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'ind_$dateString';
+    return prefs.getInt(key) ?? 0;
+  }
+
 }
