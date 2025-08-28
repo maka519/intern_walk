@@ -94,28 +94,98 @@ class barPage extends State<barState> {
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: [
-            IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        HistoryState(dateManager: widget.dateManager),
-                  ),
-                );
-              },
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.menu),
+                // IconButtonのonPressed()内のコードを以下のように修正
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          HistoryState(dateManager: widget.dateManager),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                            // 右から左へスライドするアニメーションを定義
+                            const begin = Offset(-1.0, 0.0); // 開始位置（右）
+                            const end = Offset.zero; // 終了位置（中央）
+                            const curve = Curves.ease; // アニメーションのカーブ
+
+                            var tween = Tween(
+                              begin: begin,
+                              end: end,
+                            ).chain(CurveTween(curve: curve));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                    ),
+                  );
+                },
+              ),
             ),
-            IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                );
-              },
+
+            const VerticalDivider(
+              color: Colors.grey, // 線の色
+              thickness: 1, // 線の太さ
+              indent: 10, // 上の余白
+              endIndent: 10, // 下の余白
             ),
-            IconButton(icon: const Icon(Icons.bar_chart), onPressed: () {}),
+
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.home),
+                // IconButtonのonPressed()内のコードを以下のように修正
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          HomeScreen(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                            // 右から左へスライドするアニメーションを定義
+                            const begin = Offset(-1.0, 0.0); // 開始位置（右）
+                            const end = Offset.zero; // 終了位置（中央）
+                            const curve = Curves.ease; // アニメーションのカーブ
+
+                            var tween = Tween(
+                              begin: begin,
+                              end: end,
+                            ).chain(CurveTween(curve: curve));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            const VerticalDivider(
+              color: Colors.grey, // 線の色
+              thickness: 1, // 線の太さ
+              indent: 10, // 上の余白
+              endIndent: 10, // 下の余白
+            ),
+
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.bar_chart),
+                onPressed: () {},
+              ),
+            ),
           ],
         ),
       ),

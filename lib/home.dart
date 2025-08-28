@@ -140,7 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('万数計'),
+        title: const Text('万歩計'),
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.blue.shade100,
       ),
       body: Stack(
@@ -221,32 +222,77 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: [
-            IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HistoryState(dateManager: _dateManager),
-                  ),
-                ).then((_) => _updateDataAfterNavigation());
-              },
-            ),
-            IconButton(icon: const Icon(Icons.home), onPressed: () {}),
-            IconButton(
-              icon: const Icon(Icons.bar_chart),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => barState(
-                      stepCount: _stepCount,
-                      dateManager: _dateManager,
-                      barGroups: barGroups,
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.menu),
+                // IconButtonのonPressed()内のコードを以下のように修正
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          HistoryState(dateManager: _dateManager),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                            // 右から左へスライドするアニメーションを定義
+                            const begin = Offset(-1.0, 0.0); // 開始位置（右）
+                            const end = Offset.zero; // 終了位置（中央）
+                            const curve = Curves.ease; // アニメーションのカーブ
+
+                            var tween = Tween(
+                              begin: begin,
+                              end: end,
+                            ).chain(CurveTween(curve: curve));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
+            ),
+
+            const VerticalDivider(
+              color: Colors.grey, // 線の色
+              thickness: 1, // 線の太さ
+              indent: 10, // 上の余白
+              endIndent: 10, // 下の余白
+            ),
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(icon: const Icon(Icons.home), onPressed: () {}),
+            ),
+            const VerticalDivider(
+              color: Colors.grey, // 線の色
+              thickness: 1, // 線の太さ
+              indent: 10, // 上の余白
+              endIndent: 10, // 下の余白
+            ),
+
+            SizedBox(
+              width: 100,
+              height: 60,
+              child: IconButton(
+                icon: const Icon(Icons.bar_chart),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => barState(
+                        stepCount: _stepCount,
+                        dateManager: _dateManager,
+                        barGroups: barGroups,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
