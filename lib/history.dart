@@ -78,6 +78,7 @@ class HistoryPage extends State<HistoryState> {
                     return Card(
                       child: ListTile(
                         leading: const Icon(Icons.directions_walk, color: Colors.blue),
+
                         title: Text(
                           _formatDisplayDate(dateString),
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -104,12 +105,13 @@ class HistoryPage extends State<HistoryState> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+
             IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
             IconButton(icon: const Icon(Icons.home), onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => PedometerScreen()));
             }),
             IconButton(icon: const Icon(Icons.bar_chart), onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => NextState(stepCount: 0)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => NextState(stepCount: 0,barGroups: [],)));
             }),
           ],
         ),
