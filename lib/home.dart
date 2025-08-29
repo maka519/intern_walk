@@ -7,6 +7,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:team/bar.dart';
+import 'package:just_audio/just_audio.dart';
 
 //歩行速度を1.33 m/s
 // --- 歩数計のメイン画面 ---
@@ -42,10 +43,47 @@ class _HomeScreenState extends State<HomeScreen> {
   late int bord;
   int ind = 1;
 
+  late AudioPlayer _audioPlayer; // AudioPlayerのインスタンス
+  String _message = 'さあ、歩き出そう！'; // 表示するメッセージ
+  int _lastPlayedGoal = 0; // 最後に効果音を鳴らした目標歩数
+
+  // 目標とメッセージのマップ
+  final Map<int, String> _goalMessages = {
+    100: 'まずは100歩達成！良いスタート！',
+    1000: '1,000歩達成！順調です！',
+    3000: '3,000歩！素晴らしい！もう少し頑張ろう！',
+    5000: '5,000歩達成！もう半分以上歩いたね！',
+    8000: '8,000歩！目標まであと少し！',
+    10000: '🎉 10,000歩達成！おめでとうございます！ 🎉',
+  };
+
   @override
   void initState() {
     super.initState();
     _initializeHome();
+    _audioPlayer = AudioPlayer();
+    _loadStepSound(); // 歩数ごとの効果音を事前に読み込み
+  }
+
+    Future<void> _loadStepSound() async {
+    try {
+      await _audioPlayer.setAsset('assets/audios/レベルアップ・経験値アップ.mp3'); // 適切なパスに修正
+    } catch (e) {
+      print("Error loading audio: $e");
+    }
+  }
+
+  // ▼▼▼【追加】目標達成時の効果音を鳴らす関数
+  Future<void> _playGoalSound() async {
+    try {
+      // 目標達成時の別の効果音を設定する場合（例: goal_achieved.mp3）
+      // await _audioPlayer.setAsset('assets/audios/goal_achieved.mp3');
+      // await _audioPlayer.play();
+      await _audioPlayer.seek(Duration.zero); // 最初から再生
+      await _audioPlayer.play();
+    } catch (e) {
+      print("Error playing goal sound: $e");
+    }
   }
 
   void _initializeHome() async {
@@ -58,10 +96,31 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _stepCount = savedSteps;
         _totalStepCount = totalSteps; // 読み込んだ値をセット
+        _updateMessage(_stepCount);
       });
     }
     _startListening(); // センサーの監視を開始
   }
+
+    //メッセージを更新する関数
+  void _updateMessage(int currentSteps) {
+    String newMessage = 'さあ、歩き出そう！';
+    _goalMessages.forEach((goal, msg) {
+      if (currentSteps >= goal) {
+        newMessage = msg;
+      }
+    });
+    // 特定の目標を達成した瞬間に効果音を鳴らす
+    if (currentSteps > 0) { // 0歩で鳴らさないように
+      // 100歩ごとの達成音を例として追加
+      if (currentSteps % 100 == 0 && currentSteps != _lastPlayedGoal) {
+        _playGoalSound();
+        _lastPlayedGoal = currentSteps;
+      }
+    }
+    _message = newMessage;
+  }
+
 
   Future<int> _calculateTotalSteps() async {
     int total = 0;
@@ -105,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
         
         // UIを更新
         if (mounted) {
-          setState(() {});
+          setState(() {_updateMessage(_stepCount);});
         }
         
         // 今日の歩数と、更新された総歩数の両方を保存
@@ -124,6 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     // 画面が破棄されるときに、センサーの購読を必ずキャンセルする
     _accelerometerSubscription?.cancel();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -210,6 +270,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.blue,
                     ),
                   ),
+                  const SizedBox(height: 20),
+            Text(
+              _message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 22,
+                fontStyle: FontStyle.italic,
+                color: Colors.orange,
+              ),
+            ),
                 ],
               ),
             ),
