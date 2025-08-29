@@ -54,6 +54,25 @@ class _HomeScreenState extends State<HomeScreen> {
     _currentDate = _dateManager.getTodaydate();
     final savedSteps = await _dateManager.loadStep(_currentDate);
     final totalSteps = await _dateManager.loadTotalSteps();
+    final savedList = await _dateManager.loadList(_currentDate, barGroups);
+    final savedind = await _dateManager.loadind(_currentDate);
+    int indexBar=savedList.length;
+    indexBar-=30;
+     if(indexBar<0){
+          indexBar=0;
+          debugPrint("savedListの長さ${savedList.length.toString()}");
+          for(int i=indexBar;i<(savedList.length);i++){
+            debugPrint("for文中の${savedList.length.toString()}");
+            barGroups.add(savedList[i]);
+          }
+            debugPrint("pp");
+        }
+        else{
+          for(int i=indexBar;i<indexBar+30;i++){
+          debugPrint(i.toString());
+          barGroups.add(savedList[i]);
+        }
+        }
      if (mounted) {
       setState(() {
         _stepCount = savedSteps;
