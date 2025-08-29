@@ -32,14 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
 
-  List<BarChartGroupData> _barGroups = [
-    BarChartGroupData(
-      x: 1,
-      barRods: [
-        BarChartRodData(toY: 30.toDouble(), width: 15, color: Colors.green),
-      ],
-    ),
-  ]; //日付_と歩数
+  List<BarChartGroupData> _barGroups = []; //日付_と歩数
   late int bord;
   int ind = 1;
 
@@ -103,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
             debugPrint("for文中の${savedList.length.toString()}");
             _barGroups.add(savedList[i]);
           }
-            debugPrint("pp");
+            debugPrint(ind.toString());
         }
         else{
           for(int i=indexBar;i<indexBar+30;i++){
@@ -167,18 +160,21 @@ class _HomeScreenState extends State<HomeScreen> {
       final todaydate = _dateManager.getTodaydate();
       if (todaydate != _currentDate) {
         await _dateManager.saveStep(_currentDate, _stepCount);
-        _barGroups.add(
-          BarChartGroupData(
-            x: ind,
-            barRods: [
-              BarChartRodData(
-                toY: _stepCount.toDouble(),
-                width: 15,
-                color: Colors.green,
-              ),
-            ],
-          ),
-        );
+         _barGroups.length<ind?
+                             _barGroups[ind-1]=    BarChartGroupData(
+                                x: 1,
+                                barRods: [
+                                  BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
+                                ],
+                              ):
+                              _barGroups.add(
+                        BarChartGroupData(
+                                x: 1,
+                                barRods: [
+                                  BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
+                                ],
+                              ),
+                             );
         ind++;
         await _dateManager.saveStepList(_currentDate, _barGroups);
         await _dateManager.saveind(_currentDate,ind);
@@ -335,6 +331,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(Icons.menu),
                 // IconButtonのonPressed()内のコードを以下のように修正
                 onPressed: () {
+                  debugPrint("barの長さ=${_barGroups.length.toString()}");
+                  _barGroups.length<ind?
+                             _barGroups[ind-1]=    BarChartGroupData(
+                                x: 1,
+                                barRods: [
+                                  BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
+                                ],
+                              ):
+                              _barGroups.add(
+                        BarChartGroupData(
+                                x: 1,
+                                barRods: [
+                                  BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
+                                ],
+                              ),
+                             );
                   Navigator.push(
                     context,
                     PageRouteBuilder(
@@ -387,6 +399,21 @@ class _HomeScreenState extends State<HomeScreen> {
               child: IconButton(
                 icon: const Icon(Icons.bar_chart),
                 onPressed: () {
+                  _barGroups.length<ind?
+                             _barGroups[ind-1]=    BarChartGroupData(
+                                x: 1,
+                                barRods: [
+                                  BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
+                                ],
+                              ):
+                              _barGroups.add(
+                        BarChartGroupData(
+                                x: 1,
+                                barRods: [
+                                  BarChartRodData(toY: _stepCount.toDouble(), width: 15, color: Colors.green),
+                                ],
+                              ),
+                             );
                   Navigator.push(
                     context,
                     MaterialPageRoute(
