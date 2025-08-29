@@ -77,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _stepCount = savedSteps;
         _totalStepCount = totalSteps; // 読み込んだ値をセット
+        ind=savedind;
       });
     }
     _startListening(); // センサーの監視を開始
@@ -106,6 +107,22 @@ class _HomeScreenState extends State<HomeScreen> {
     ) async {
       final todaydate = _dateManager.getTodaydate();
       if (todaydate != _currentDate) {
+        await _dateManager.saveStep(_currentDate, _stepCount);
+        barGroups.add(
+          BarChartGroupData(
+            x: ind,
+            barRods: [
+              BarChartRodData(
+                toY: _stepCount.toDouble(),
+                width: 15,
+                color: Colors.green,
+              ),
+            ],
+          ),
+        );
+        ind++;
+        await _dateManager.saveStepList(_currentDate, barGroups);
+        await _dateManager.saveind(_currentDate,ind);
         await _dateManager.saveStep(_currentDate, _stepCount);
         if (mounted) {
           setState(() {
@@ -252,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     context,
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
-                          HistoryState(dateManager: _dateManager),
+                          HistoryState(dateManager: _dateManager,barGroups:barGroups),
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                             // 右から左へスライドするアニメーションを定義

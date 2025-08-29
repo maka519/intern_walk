@@ -105,7 +105,7 @@ class barPage extends State<barState> {
                     context,
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
-                          HistoryState(dateManager: widget.dateManager),
+                          HistoryState(dateManager: widget.dateManager,barGroups: _barGroups,),
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                             // 右から左へスライドするアニメーションを定義

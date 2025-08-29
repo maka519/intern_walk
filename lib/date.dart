@@ -58,7 +58,7 @@ class DateManager {
     return prefs.getInt(key) ?? 0;
   }
 
-  Future<void> saveStepList(String dateString, List<BarChartGroupData> barGroups) async {
+   Future<void> saveStepList(String currentDate,List<BarChartGroupData> barGroups) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final List<Map<String, dynamic>> dataToSave = barGroups.map((group) {
       return {
@@ -67,24 +67,22 @@ class DateManager {
           return {
             'toY': rod.toY,
             'width': rod.width,
-            'color': rod.color?.value, // Colorをintに変換
+            'color': rod.color?.toARGB32(),
           };
         }).toList(),
       };
     }).toList();
     final String jsonString = jsonEncode(dataToSave);
-    final key = 'bar_data_$dateString'; // キーを 'bar_data_' から始める
-    await prefs.setString(key, jsonString);
+    await prefs.setString(currentDate, jsonString);
   }
-
   //ローカルストレージからロード
 Future<List<BarChartGroupData>> loadList(String currentDate,List<BarChartGroupData> barGroups)async{
   final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? jsonString = prefs.getString(currentDate);
+   late final List<BarChartGroupData>newBarGroups =[]; 
     if (jsonString != null) {
       final List<dynamic> loadedData = jsonDecode(jsonString);
-      barGroups.clear();
-      barGroups.addAll(loadedData.map((data) {
+      newBarGroups.addAll(loadedData.map((data) {
         return BarChartGroupData(
           x: (data['x'] as num).toInt(), // numをdoubleに明示的にキャスト
           barRods: (data['barRods'] as List).map((rodData) {
@@ -96,7 +94,7 @@ Future<List<BarChartGroupData>> loadList(String currentDate,List<BarChartGroupDa
         );
       }).toList());
     }
-    return barGroups;
+    return newBarGroups;
 }
 //棒グラフのストレージの破壊
  Future<void> rmList(String currentDate) async {
