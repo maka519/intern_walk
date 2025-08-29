@@ -76,7 +76,7 @@ class DateManager {
     await prefs.setString(currentDate, jsonString);
   }
   //ローカルストレージからロード
-Future<List<BarChartGroupData>> loadList(String currentDate,List<BarChartGroupData> barGroups)async{
+Future<List<BarChartGroupData>> loadList(String currentDate)async{
   final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? jsonString = prefs.getString(currentDate);
    late final List<BarChartGroupData>newBarGroups =[]; 
