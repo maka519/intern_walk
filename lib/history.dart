@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:team/bar.dart';
@@ -8,7 +9,8 @@ import 'home.dart';
 
 class HistoryState extends StatefulWidget {
   final DateManager dateManager;
-  const HistoryState({super.key, required this.dateManager});
+  final barGroups;
+  const HistoryState({super.key, required this.dateManager,required this.barGroups});
 
   @override
   State<HistoryState> createState() => HistoryPage();
@@ -17,16 +19,18 @@ class HistoryState extends StatefulWidget {
 class HistoryPage extends State<HistoryState> {
   Map<String, int> _historyData = {};
   bool _isLoading = true;
-
+  late List<BarChartGroupData> barGroups;
   @override
   void initState() {
     super.initState();
     _loadHistory();
   }
-
+  late int _stepCount; 
   Future<void> _loadHistory() async {
     final Map<String, int> loadedData = {};
     final today = DateTime.now();
+    barGroups= await widget.barGroups;
+    _stepCount=await widget.dateManager.loadStep(widget.dateManager.getTodaydate());
     for (int i = 0; i < 30; i++) {
       final date = today.subtract(Duration(days: i));
       final dateString = widget.dateManager.getTodaydate(date);
@@ -156,11 +160,11 @@ class HistoryPage extends State<HistoryState> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => barState(
-                        stepCount: 0,
+                    MaterialPageRoute (
+                      builder: (context) => barState (
+                        stepCount: _stepCount,
                         dateManager: widget.dateManager,
-                        barGroups: [],
+                        barGroups: barGroups,
                       ),
                     ),
                   );

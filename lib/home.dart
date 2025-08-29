@@ -32,14 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
   // 一度ピークを検出した後、次のステップを検出可能にするためのフラグ
   bool _isPeak = false;
 
-  List<BarChartGroupData> barGroups = [
+  List<BarChartGroupData> _barGroups = [
     BarChartGroupData(
       x: 1,
       barRods: [
         BarChartRodData(toY: 30.toDouble(), width: 15, color: Colors.green),
       ],
     ),
-  ]; //日付と歩数
+  ]; //日付_と歩数
   late int bord;
   int ind = 1;
 
@@ -92,10 +92,30 @@ class _HomeScreenState extends State<HomeScreen> {
     _currentDate = _dateManager.getTodaydate();
     final savedSteps = await _dateManager.loadStep(_currentDate);
     final totalSteps = await _dateManager.loadTotalSteps();
+    final savedList = await _dateManager.loadList(_currentDate);
+    final savedind = await _dateManager.loadind(_currentDate);
+    int indexBar=savedList.length;
+    indexBar-=30;
+     if(indexBar<0){
+          indexBar=0;
+          debugPrint("savedListの長さ${savedList.length.toString()}");
+          for(int i=indexBar;i<(savedList.length);i++){
+            debugPrint("for文中の${savedList.length.toString()}");
+            _barGroups.add(savedList[i]);
+          }
+            debugPrint("pp");
+        }
+        else{
+          for(int i=indexBar;i<indexBar+30;i++){
+          debugPrint(i.toString());
+          _barGroups.add(savedList[i]);
+        }
+        }
      if (mounted) {
       setState(() {
         _stepCount = savedSteps;
         _totalStepCount = totalSteps; // 読み込んだ値をセット
+        ind=savedind;
         _updateMessage(_stepCount);
       });
     }
@@ -146,6 +166,22 @@ class _HomeScreenState extends State<HomeScreen> {
     ) async {
       final todaydate = _dateManager.getTodaydate();
       if (todaydate != _currentDate) {
+        await _dateManager.saveStep(_currentDate, _stepCount);
+        _barGroups.add(
+          BarChartGroupData(
+            x: ind,
+            barRods: [
+              BarChartRodData(
+                toY: _stepCount.toDouble(),
+                width: 15,
+                color: Colors.green,
+              ),
+            ],
+          ),
+        );
+        ind++;
+        await _dateManager.saveStepList(_currentDate, _barGroups);
+        await _dateManager.saveind(_currentDate,ind);
         await _dateManager.saveStep(_currentDate, _stepCount);
         if (mounted) {
           setState(() {
@@ -303,7 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     context,
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
-                          HistoryState(dateManager: _dateManager),
+                          HistoryState(dateManager: _dateManager,barGroups:_barGroups),
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                             // 右から左へスライドするアニメーションを定義
@@ -357,7 +393,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (context) => barState(
                         stepCount: _stepCount,
                         dateManager: _dateManager,
-                        barGroups: barGroups,
+                        barGroups: _barGroups,
                       ),
                     ),
                   );
