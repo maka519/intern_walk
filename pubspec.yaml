@@ -67,7 +67,7 @@ flutter:
   # 以下の行を追加してください
   assets:
     - images/bg_dote.jpg
-    - assets/audios/
+    - assets/audios/レベルアップ・経験値アップ.mp3
 
   # To add assets to your application, add an assets section, like this:
   # assets:
