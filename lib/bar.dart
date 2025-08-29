@@ -52,7 +52,7 @@ class barPage extends State<barState> {
         title: const Text('歩数グラフ'),
         automaticallyImplyLeading: false,
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           children: [
             Text(
