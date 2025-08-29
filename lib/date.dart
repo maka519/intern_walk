@@ -2,10 +2,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:convert';
+
 class DateManager {
-
-
-    Future<void> saveTotalSteps(int totalSteps) async {
+  Future<void> saveTotalSteps(int totalSteps) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('total_steps', totalSteps);
   }
@@ -40,9 +39,9 @@ class DateManager {
 
   //今日の日付を取得
   String getTodaydate([DateTime? date]) {
-    final now = DateTime.now();
-    final formatter = DateFormat('yyyy/MM/dd'); //形式設定
-    return formatter.format(now);
+    final dateToFormat = date ?? DateTime.now(); 
+    final formatter = DateFormat('yyyy/MM/dd');
+    return formatter.format(dateToFormat);
   }
 
   //歩数の保存
